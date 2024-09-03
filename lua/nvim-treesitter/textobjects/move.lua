@@ -96,11 +96,40 @@ local function move(opts)
         end
       end
     end
+
+    if opts.no_exec then
+      return best_match
+    end
+
     ts_utils.goto_node(best_match and best_match.node, not best_start, not config.set_jumps)
+    -- vim.print(best_match.node)
+    -- vim.print(best_match.node:start())
   end
 end
 
 local move_repeatable = repeatable_move.make_repeatable_move(move)
+
+M.get_next_node_start = function(query_strings_regex, query_group)
+  local nnd =  move {
+    query_strings_regex = query_strings_regex,
+    query_group = query_group,
+    start = true,
+    forward = true,
+    no_exec = true,
+  }
+  return nnd.node:start()
+end
+
+M.get_previous_node_start = function(query_strings_regex, query_group)
+  local nnd =  move {
+    query_strings_regex = query_strings_regex,
+    query_group = query_group,
+    start = true,
+    forward = false,
+    no_exec = true,
+  }
+  return nnd.node:start()
+end
 
 M.goto_next_start = function(query_strings_regex, query_group)
   move_repeatable {
